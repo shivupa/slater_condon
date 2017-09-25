@@ -20,7 +20,7 @@
 #include "../rdtsc.c"
 #include "../nsubst1.x.h"
 #include <cmath>
-#include <ctime>
+#include <chrono>
 #include <iostream>
 #include <bitset>
 
@@ -46,7 +46,7 @@ int main(int argc, char **argv){
     double t2 = 0.0;
     double error = 0.0;
 
-    std::clock_t cpu0 = std::clock();
+    std::chrono::high_resolution_clock::time_point cpu0=std::chrono::high_resolution_clock::now();
     double events = 0.0;
     int res;
     for(int l = 0; l < ndet; l++){
@@ -61,11 +61,11 @@ int main(int argc, char **argv){
     std::cout << "test" << std::endl;
 
     events = ndet*ndet;
-    std::clock_t cpu1 = std::clock();
+    std::chrono::high_resolution_clock::time_point cpu1=std::chrono::high_resolution_clock::now();
     error = std::sqrt(std::abs(std::pow((t/events),2)-t2/events)/events );
 
     std::cout << "Cycles n_excitations : " << t/events << " +/- " << error/std::sqrt(events) << std::endl;
-    std::cout << "CPU    n_excitations : " << (cpu1-cpu0)/1000.0 << " s"<< std::endl;
+    std::cout << "CPU    n_excitations : " << std::chrono::duration_cast<std::chrono::microseconds>(cpu1-cpu0).count()/1e6 << " s"<< std::endl;
     std::cout << res << std::endl;
 
 }

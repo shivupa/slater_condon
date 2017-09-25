@@ -25,6 +25,8 @@ int n_excitations(std::vector< std::vector< std::vector< std::bitset<64> > > >& 
     for(int l = 0; l < Nint; l++){
         excitations += (int)(det[det1][0][l] ^ det[det2][0][l]).to_ulong();
         excitations += (int)(det[det1][1][l] ^ det[det2][1][l]).to_ulong();
+        // excitations += __builtin_popcountl((det[det1][0][l] ^ det[det2][0][l]).to_ulong());
+        // excitations += __builtin_popcountl((det[det1][1][l] ^ det[det2][1][l]).to_ulong());
 
     }
     return excitations<<=1;
