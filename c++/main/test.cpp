@@ -16,14 +16,60 @@
 //   with this program; if not, write to the Free Software Foundation, Inc.,
 //   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+#include "../read_input.h"
+#include "../rdtsc.c"
+#include "../nsubst1.x.h"
+#include <cmath>
+#include <ctime>
+#include <iostream>
+#include <bitset>
+
 int main(int argc, char **argv){
-    const int
+    const int Nint = 2;
+    const int ndet = 10000;
+    const int mo_num = 105;
+
+    std::vector<double> density_matrix; //= new double[mo_num*mo_num];
+    std::vector<double> coef; //= new double[ndet];
+    std::vector< std::vector< std::vector< std::bitset<64> > > > det; // = new std::vector<unsigned long long int>[ndet*2*Nint];
+    int n_excit = 0;
+
+    read_input(det, coef, Nint, ndet, mo_num,  "h2o_determinants.dat", "cu.coef");
+    std::cout << std::endl;
+    std::cout << "ndet = " << ndet << std::endl;
+    std::cout << std::endl;
+
+    //-------------------------------------------------
+    double t = 0.0;
+    double t0 = 0.0;
+    double t1 = 0.0;
+    double t2 = 0.0;
+    double error = 0.0;
+
+    std::clock_t cpu0 = std::clock();
+    double events = 0.0;
+    int res;
+    for(int l = 0; l < ndet; l++){
+        t0 = irp_rdtsc_();
+        for(int k = 0; k < ndet; k++){
+            res = n_excitations(det, l, k, Nint);
+        }
+        t1 = irp_rdtsc_();
+        t += (t1-t0);
+        t2 *= (t1-t0)*(t1-t0);
+    }
+    std::cout << "test" << std::endl;
+
+    events = ndet*ndet;
+    std::clock_t cpu1 = std::clock();
+    error = std::sqrt(std::abs(std::pow((t/events),2)-t2/events)/events );
+
+    std::cout << "Cycles n_excitations : " << t/events << " +/- " << error/std::sqrt(events) << std::endl;
+    std::cout << "CPU    n_excitations : " << (cpu1-cpu0)/1000.0 << " s"<< std::endl;
+    std::cout << res << std::endl;
+
 }
-    implicit none
-    integer,parameter  :: Nint=2, ndet=10000
-    integer*8  :: det(Nint,2,ndet)
-    integer    :: N_int
-    integer :: n_excitations
+/*
     integer    :: i,k,l
     double precision :: phase
     integer    :: exc(0:2,2,2)
@@ -33,20 +79,9 @@ int main(int argc, char **argv){
     double precision :: cpu0, cpu1
     double precision :: events
     double precision :: error
-    double precision :: coef(ndet)
-    integer, parameter :: mo_num = 105
-    double precision :: density_matrix(mo_num,mo_num)
     integer,parameter  :: lmax = 10000
     integer:: res
-    N_int = Nint
-    call read_input(det,N_int,coef,ndet,'h2o_determinants.dat','cu.coef')
 
-    print *,  'ndet = ', ndet
-    //-------------------------------------------------
-    t=0.d0
-    t2=0.d0
-    call cpu_time(cpu0)
-    events = 0_8
     do l=1,ndet
      i=0
      t0 = irp_rdtsc()
@@ -61,9 +96,6 @@ int main(int argc, char **argv){
     events = dble(ndet)**2
     call cpu_time(cpu1)
     error = sqrt( abs((t/events)**2-t2/events)/events )
-    print *,  'Cycles n_excitations:',  t/events, ' +/- ', error/sqrt(events)
-    print *,  'CPU    n_excitations:',  (cpu1-cpu0)
-    print *,  res
     //-------------------------------------------------
 
 
@@ -210,4 +242,4 @@ subroutine print_key( key, N_int  )
  print *,  ''
 
 end
-
+*/

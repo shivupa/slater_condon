@@ -15,17 +15,9 @@
 //   You should have received a copy of the GNU General Public License along
 //   with this program; if not, write to the Free Software Foundation, Inc.,
 //   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+#include <string>
 #include <vector>
 #include <bitset>
-#include <iostream>
-
-int n_excitations(std::vector< std::vector< std::vector< std::bitset<64> > > >& det, int det1, int det2, int Nint){
-    int excitations = 0;
-
-    for(int l = 0; l < Nint; l++){
-        excitations += (int)(det[det1][0][l] ^ det[det2][0][l]).to_ulong();
-        excitations += (int)(det[det1][1][l] ^ det[det2][1][l]).to_ulong();
-
-    }
-    return excitations<<=1;
-}
+void read_input(std::vector< std::vector< std::vector< std::bitset<64> > > >& det,  std::vector<double>& coef, const int Nint, const int ndet, const int mo_num, std::string filename, std::string filename2);
