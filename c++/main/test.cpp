@@ -16,13 +16,17 @@
 //   with this program; if not, write to the Free Software Foundation, Inc.,
 //   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+#include <cmath>
+#include <chrono>
+#include <vector>
+#include <iostream>
+#include <bitset>
+
+
 #include "../read_input.h"
 #include "../rdtsc.c"
 #include "../nsubst1.x.h"
-#include <cmath>
-#include <chrono>
-#include <iostream>
-#include <bitset>
+#include "../exc.h"
 
 int main(int argc, char **argv){
     const int Nint = 2;
@@ -31,7 +35,7 @@ int main(int argc, char **argv){
 
     std::vector<double> density_matrix; //= new double[mo_num*mo_num];
     std::vector<double> coef; //= new double[ndet];
-    std::vector< std::vector< std::vector< std::bitset<64> > > > det; // = new std::vector<unsigned long long int>[ndet*2*Nint];
+    std::vector< std::vector< std::vector< unsigned int > > > det; // = new std::vector<unsigned long long int>[ndet*2*Nint];
     int n_excit = 0;
 
     read_input(det, coef, Nint, ndet, mo_num,  "h2o_determinants.dat", "cu.coef");
@@ -67,7 +71,21 @@ int main(int argc, char **argv){
     std::cout << "Cycles n_excitations : " << t/events << " +/- " << error/std::sqrt(events) << std::endl;
     std::cout << "CPU    n_excitations : " << std::chrono::duration_cast<std::chrono::microseconds>(cpu1-cpu0).count()/1e6 << " s"<< std::endl;
     std::cout << res << std::endl;
-
+    //-------------------------------------------------
+    //-------------------------------------------------
+    t = 0.0;
+    t2 = 0.0;
+    cpu0=std::chrono::high_resolution_clock::now();
+    std::vector< std::vector< std::vector<unsigned int > > > exc (3,std::vector< std::vector< unsigned int > >(2,std::vector <unsigned int > (0,0)));
+    int degree;
+    double phase = 0.0;
+    for(int l = 0; l < ndet; l++){
+        t0 = irp_rdtsc_();
+        for(int k = 0; k < ndet; k++){
+            //get excitation
+            get_excitation(det, phase, exc, degree, l, k, Nint);
+        }
+    }
 }
 /*
     integer    :: i,k,l
@@ -82,46 +100,8 @@ int main(int argc, char **argv){
     integer,parameter  :: lmax = 10000
     integer:: res
 
-    do l=1,ndet
-     i=0
-     t0 = irp_rdtsc()
-     do k=1,ndet
-       //DIR$ FORCEINLINE
-       res = n_excitations(det(1,1,l),det(1,1,k),N_int)
-     enddo
-     t1 = irp_rdtsc(i)
-     t = t+(t1-t0)
-     t2 = t2+(t1-t0)*(t1-t0)
-    enddo
-    events = dble(ndet)**2
-    call cpu_time(cpu1)
-    error = sqrt( abs((t/events)**2-t2/events)/events )
     //-------------------------------------------------
 
-
-    //-------------------------------------------------
-    t=0.d0
-    t2=0.d0
-    call cpu_time(cpu0)
-    do l=1,ndet
-     t0 = irp_rdtsc()
-     do k=1,ndet
-      //DIR$ FORCEINLINE
-      call get_excitation(det(1,1,l),det(1,1,k),exc,i,phase,N_int)
-     enddo
-     t1 = irp_rdtsc(i)
-     t = t+(t1-t0)
-     t2 = t2+(t1-t0)*(t1-t0)
-    enddo
-    events = dble(ndet)**2
-    call cpu_time(cpu1)
-    error = sqrt( abs((t/events)**2-t2/events)/events )
-    print *,  'Cycles get_excitation:',  t/events, ' +/- ', error/sqrt(events)
-    print *,  'CPU    get_excitation:',  (cpu1-cpu0)
-    //-------------------------------------------------
-//   stop
-
-    //-------------------------------------------------
     t=0.d0
     t3=0.d0
     t4=0.d0

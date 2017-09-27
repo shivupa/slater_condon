@@ -19,5 +19,4 @@
 
 #include <string>
 #include <vector>
-#include <bitset>
-void read_input(std::vector< std::vector< std::vector< std::bitset<64> > > >& det,  std::vector<double>& coef, const int Nint, const int ndet, const int mo_num, std::string filename, std::string filename2);
+void read_input(std::vector< std::vector< std::vector< unsigned int> > >& det,  std::vector<double>& coef, const int Nint, const int ndet, const int mo_num, std::string filename, std::string filename2);

@@ -15,5 +15,11 @@
 //   You should have received a copy of the GNU General Public License along
 //   with this program; if not, write to the Free Software Foundation, Inc.,
 //   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#include <algorithm>
 #include <vector>
-int n_excitations(std::vector< std::vector< std::vector< unsigned int > > >& det, int det1, int det2, int Nint);
+
+void get_excitation(std::vector< std::vector< std::vector< unsigned int > > >& det, double& phase, std::vector< std::vector< std::vector< unsigned int > > >& exc, int& degree, int det1, int det2, int Nint);
+
+void get_double_excitation(std::vector< std::vector< std::vector< unsigned int > > >& det, double& phase, std::vector< std::vector< std::vector< unsigned int > > >& exc, int det1, int det2, int Nint);
+
+void get_single_excitation(std::vector< std::vector< std::vector<  unsigned int > > >& det, double& phase, std::vector< std::vector< std::vector< unsigned int > > >& exc, int det1, int det2, int Nint);
